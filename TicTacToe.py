@@ -34,14 +34,41 @@ fps = pygame.time.Clock()
 # Game
 running = True
 time = 0
-player = {"a": -1, "b": 1}
+player = {"a": 1, "b": -1}
+turn = 0
+winner = None
 
 # Cursor
 cursor = [1, 1]
 cursor_type = player["a"]
+cursor_visible = True
+cursor_time = 0
+cursor_tick = 500
 
 # Board
 board = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+# Function
+def drawBoardCell(surf, colo_back, color, y, x):
+    pygame.draw.rect(surf, colo_back, [x * 120, y * 120, 120, 120])
+    pygame.draw.rect(surf, color, [x * 120 + 5, y * 120 + 5, 120 - 10, 120 - 10])
+
+
+def drawCircleMark(surf, color_back, color, y, x):
+    pygame.draw.circle(surf, color_back, [x * 120 + 60, y * 120 + 60], 60 - 8, 14)
+    pygame.draw.circle(surf, color, [x * 120 + 60, y * 120 + 60], 60 - 10, 14 - 4)
+
+
+def drawXMark(surf, color_back, color, y, x):
+    pygame.draw.line(surf, color_back, [x * 120 + 20, y * 120 + 10],
+                     [x * 120 + 120 - 20, y * 120 + 120 - 10], 20)
+    pygame.draw.line(surf, color_back, [x * 120 + 120 - 20, y * 120 + 10],
+                     [x * 120 + 20, y * 120 + 120 - 10], 20)
+    pygame.draw.line(surf, color, [x * 120 + 22, y * 120 + 12],
+                     [x * 120 + 120 - 22, y * 120 + 120 - 12], 20 - 6)
+    pygame.draw.line(surf, color, [x * 120 + 120 - 22, y * 120 + 12],
+                     [x * 120 + 22, y * 120 + 120 - 12], 20 - 6)
+
 
 # Main loop
 while running:
@@ -63,52 +90,55 @@ while running:
             if event.key == pygame.K_RIGHT:
                 cursor[1] += 1 if cursor[1] < 2 else 0
             if event.key == pygame.K_RETURN:
-                board[cursor[0]][cursor[1]] = cursor_type
-                cursor_type = player["b"] if cursor_type == player["a"] else player["a"]
+                if board[cursor[0]][cursor[1]] == 0:
+                    board[cursor[0]][cursor[1]] = cursor_type
+                    cursor_type = player["b"] if cursor_type == player["a"] else player["a"]
+                    turn += 1
             if event.key == pygame.K_ESCAPE:
                 running = False
-            print(board)
+
+    # Cursor
+    if time - cursor_time >= cursor_tick:
+        cursor_visible = False if cursor_visible else True
+        cursor_time = time
 
     # Game over
+    for i in range(3):
+        if abs(sum(board[i])) == 3:
+            winner = board[i][0]
+            running = False
+        elif abs(sum(board[j][i] for j in range(3))) == 3:
+            winner = board[0][i]
+            running = False
+    if abs(sum(board[i][i] for i in range(3))) == 3 or abs(sum(board[i][2-i] for i in range(3))) == 3:
+        winner = board[1][1]
+        running = False
+    if turn >= 9:
+        running = False
 
     # Refresh game screen
     window.fill(BLACK)
-    for i in range(3): # Board
+    for i in range(3):
         for j in range(3):
             if (i + j) % 2 == 0:
-                pygame.draw.rect(window, SADDLEBROWN, [j * 120, i * 120, 120, 120])
-                pygame.draw.rect(window, SIENNA, [j * 120 + 5, i * 120 + 5, 120 - 10, 120 - 10])
+                drawBoardCell(window, SADDLEBROWN, SIENNA, i, j)
             else:
-                pygame.draw.rect(window, CHOCOLATE, [j * 120, i * 120, 120, 120])
-                pygame.draw.rect(window, SANDYBROWN, [j * 120 + 5, i * 120 + 5, 120 - 10, 120 - 10])
+                drawBoardCell(window, CHOCOLATE, SANDYBROWN, i, j)
             if board[i][j] == player["a"]:
-                pygame.draw.circle(window, BLACK, [j * 120 + 60, i * 120 + 60], 60 - 8, 14)
-                pygame.draw.circle(window, CORAL, [j * 120 + 60, i * 120 + 60], 60 - 10, 10)
+                drawCircleMark(window, BLACK, CORAL, i, j)
             elif board[i][j] == player["b"]:
-                pygame.draw.line(window, BLACK, [j * 120 + 20, i * 120 + 20],
-                                 [j * 120 + 120 - 20, i * 120 + 120 - 20], 20)
-                pygame.draw.line(window, BLACK, [j * 120 + 120 - 20, i * 120 + 20],
-                                 [j * 120 + 20, i * 120 + 120 - 20], 20)
-                pygame.draw.line(window, DODGERBLUE, [j * 120 + 22, i * 120 + 22],
-                                 [j * 120 + 120 - 22, i * 120 + 120 - 22], 14)
-                pygame.draw.line(window, DODGERBLUE, [j * 120 + 120 - 22, i * 120 + 22],
-                                 [j * 120 + 22, i * 120 + 120 - 22], 14)
-
-    if cursor_type == player["a"]: # Cursor
-        pygame.draw.circle(window, GRAY, [cursor[1] * 120 + 60, cursor[0] * 120 + 60], 60 - 8, 14)
-        pygame.draw.circle(window, SILVER, [cursor[1] * 120 + 60, cursor[0] * 120 + 60], 60 - 10, 10)
-    else:
-        pygame.draw.line(window, GRAY, [cursor[1] * 120 + 20, cursor[0] * 120 + 20],
-                         [cursor[1] * 120 + 120 - 20, cursor[0] * 120 + 120 - 20], 20)
-        pygame.draw.line(window, GRAY, [cursor[1] * 120 + 120 - 20, cursor[0] * 120 + 20],
-                         [cursor[1] * 120 + 20, cursor[0] * 120 + 120 - 20], 20)
-        pygame.draw.line(window, SILVER, [cursor[1] * 120 + 22, cursor[0] * 120 + 22],
-                         [cursor[1] * 120 + 120 - 22, cursor[0] * 120 + 120 - 22], 14)
-        pygame.draw.line(window, SILVER, [cursor[1] * 120 + 120 - 22, cursor[0] * 120 + 22],
-                         [cursor[1] * 120 + 22, cursor[0] * 120 + 120 - 22], 14)
+                drawXMark(window, BLACK, DODGERBLUE, i, j)
+    if cursor_visible:
+        if cursor_type == player["a"]:
+            drawCircleMark(window, GRAY, SILVER, cursor[0], cursor[1])
+        else:
+            drawXMark(window, GRAY, SILVER, cursor[0], cursor[1])
     pygame.display.update()
 
 # Quit
-print("Winner is player : ")
+if winner:
+    print("Player " + ("A[O]" if winner == player["a"] else "B[X]") + " is winner!", end="")
+else:
+    print("Draw!", end="")
 pygame.quit()
 quit()

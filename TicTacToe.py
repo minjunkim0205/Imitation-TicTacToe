@@ -53,11 +53,9 @@ def drawBoardCell(surf, colo_back, color, y, x):
     pygame.draw.rect(surf, colo_back, [x * 120, y * 120, 120, 120])
     pygame.draw.rect(surf, color, [x * 120 + 5, y * 120 + 5, 120 - 10, 120 - 10])
 
-
 def drawCircleMark(surf, color_back, color, y, x):
     pygame.draw.circle(surf, color_back, [x * 120 + 60, y * 120 + 60], 60 - 8, 14)
     pygame.draw.circle(surf, color, [x * 120 + 60, y * 120 + 60], 60 - 10, 14 - 4)
-
 
 def drawXMark(surf, color_back, color, y, x):
     pygame.draw.line(surf, color_back, [x * 120 + 20, y * 120 + 10],
@@ -68,7 +66,6 @@ def drawXMark(surf, color_back, color, y, x):
                      [x * 120 + 120 - 22, y * 120 + 120 - 12], 20 - 6)
     pygame.draw.line(surf, color, [x * 120 + 120 - 22, y * 120 + 12],
                      [x * 120 + 22, y * 120 + 120 - 12], 20 - 6)
-
 
 # Main loop
 while running:

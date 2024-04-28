@@ -15,6 +15,5 @@
 * **Environment**
     * Windows
 
-* **Package**
-    * Pygame\
-      ``` pip install pygame ```
+* **Requirements**
+    * [requirements.txt](./requirements.txt)

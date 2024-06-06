@@ -2,7 +2,7 @@
 
 ## Preview
 
-![Preview](Preview.png)
+![Preview](./Preview.png)
 
 ## Introduction
 
@@ -10,10 +10,4 @@
 
 ## Requirements
 
-> 프로젝트에 필요한 환경.
-
-* **Environment**
-    * Windows
-
-* **Requirements**
-    * [requirements.txt](./requirements.txt)
+> pip install -r [requirements.txt](./requirements.txt)
